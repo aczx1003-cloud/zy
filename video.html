@@ -204,5 +204,16 @@ function animate() {
 }
 animate();
 </script>
+ <script>
+function doSearch() {
+  let key = document.getElementById('search-input').value.toLowerCase();
+  let cards = document.querySelectorAll('.card');
+  cards.forEach(card => {
+    let text = card.innerText.toLowerCase();
+    card.style.display = text.includes(key) ? 'block' : 'none';
+  });
+}
+</script>
+
 </body>
 </html>
