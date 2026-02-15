@@ -80,6 +80,17 @@
     cursor: pointer;
     width: 100%;
   }
+  #searchInput {
+    padding: 12px;
+    width: 90%;
+    max-width: 400px;
+    border: none;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    background: rgba(255,255,255,0.1);
+    color: #fff;
+    font-size: 16px;
+  }
 </style>
 </head>
 <body>
@@ -87,11 +98,7 @@
 <canvas id="particleCanvas"></canvas>
 
 <div class="glass-container">
- 
-<div style="text-align:center; margin:20px 0;">
-  <input type="text" id="search-input" placeholder="搜索资源关键词..." style="padding:8px; width:70%; max-width:400px; border:1px solid #ddd; border-radius:4px;">
-  <button onclick="doSearch()" style="padding:8px 16px; margin-left:5px; background:#007bff; color:#fff; border:none; border-radius:4px; cursor:pointer;">搜索</button>
-</div>
+  <input type="text" id="searchInput" placeholder="实时搜索分类...">
 
   <div class="header">
     <h1>🎬 影视资源</h1>
@@ -101,16 +108,16 @@
   <div class="card">
     <h3>🎬 热门电影合集</h3>
     <p>高清合集 · 持续更新中</p>
-    <button onclick="window.open('https://pan.quark.cn/s/5f22206f2b91','_blank')">在线观看</button>
+    <button onclick="location.href='https://aczx1003-cloud.github.io/zy/movies.html'">查看电影</button>
   </div>
 
   <div class="card">
     <h3>🔥 动漫新番合集</h3>
     <p>2025-2026 热门动漫 超清</p>
-    <button onclick="window.open('https://pan.quark.cn/s/8d2227f8e161','_blank')">立即观看</button>
+    <button onclick="location.href='https://aczx1003-cloud.github.io/zy/anime.html'">查看动漫</button>
   </div>
 
-  <button class="back-btn" onclick="location.href='index.html'">返回首页</button>
+  <button class="back-btn" onclick="location.href='https://aczx1003-cloud.github.io/zy/index.html'">返回首页</button>
 </div>
 
 <script>
@@ -203,16 +210,17 @@ function animate() {
   requestAnimationFrame(animate);
 }
 animate();
-</script>
- <script>
-function doSearch() {
-  let key = document.getElementById('search-input').value.toLowerCase();
+
+// 实时搜索
+const searchInput = document.getElementById('searchInput');
+searchInput.addEventListener('input', function() {
+  let val = this.value.toLowerCase();
   let cards = document.querySelectorAll('.card');
   cards.forEach(card => {
     let text = card.innerText.toLowerCase();
-    card.style.display = text.includes(key) ? 'block' : 'none';
+    card.style.display = text.includes(val) ? 'block' : 'none';
   });
-}
+});
 </script>
 
 </body>
