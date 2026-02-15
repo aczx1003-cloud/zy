@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>影视资源 - 资源几何站</title>
+<style>
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  html, body {
+    width: 100%;
+    height: 100%;
+    background: #000;
+    font-family: system-ui, sans-serif;
+    overflow-x: hidden;
+    color: #fff;
+  }
+  #particleCanvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 1;
+  }
+  .glass-container {
+    position: relative;
+    z-index: 2;
+    max-width: 700px;
+    width: 90%;
+    margin: 0 auto;
+    padding: 80px 0;
+    text-align: center;
+  }
+  .header {
+    text-align: center;
+    margin-bottom: 40px;
+  }
+  .header h1 {
+    font-size: 36px;
+    background: linear-gradient(90deg,#66ccff,#cc66ff);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .header p {
+    color: #aaa;
+    margin-top: 8px;
+    font-size: 15px;
+  }
+  .card {
+    background: rgba(20,22,44,0.5);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 16px;
+    padding: 24px;
+    margin-bottom: 16px;
+    backdrop-filter: blur(6px);
+    text-align: left;
+  }
+  .back-btn {
+    margin-top: 30px;
+    padding: 12px 24px;
+    border-radius: 10px;
+    border: none;
+    background: linear-gradient(90deg,#66ccff,#cc66ff);
+    color: #000;
+    font-weight: bold;
+    cursor: pointer;
+  }
+  .card button {
+    padding: 10px 18px;
+    border-radius: 10px;
+    border: none;
+    background: linear-gradient(90deg,#66ccff,#cc66ff);
+    color: #000;
+    font-weight: bold;
+    cursor: pointer;
+    width: 100%;
+  }
+</style>
+</head>
+<body>
+
+<canvas id="particleCanvas"></canvas>
+
+<div class="glass-container">
+  <div class="header">
+    <h1>🎬 影视资源</h1>
+    <p>电影 | 剧集 | 动漫 | 纪录片 | 高清合集</p>
+  </div>
+
+  <div class="card">
+    <h3>🎬 热门电影合集</h3>
+    <p>高清合集 · 持续更新中</p>
+    <button onclick="window.open('https://pan.quark.cn/s/5f22206f2b91','_blank')">在线观看</button>
+  </div>
+
+  <div class="card">
+    <h3>🔥 动漫新番合集</h3>
+    <p>2025-2026 热门动漫 超清</p>
+    <button onclick="window.open('https://pan.quark.cn/s/8d2227f8e161','_blank')">立即观看</button>
+  </div>
+
+  <button class="back-btn" onclick="location.href='index.html'">返回首页</button>
+</div>
+
+<script>
+const canvas = document.getElementById('particleCanvas');
+const ctx = canvas.getContext('2d');
+let w = window.innerWidth;
+let h = window.innerHeight;
+
+function resizeCanvas() {
+  w = window.innerWidth;
+  h = window.innerHeight;
+  canvas.width = w;
+  canvas.height = h;
+}
+resizeCanvas();
+window.addEventListener('resize', resizeCanvas);
+
+const colors = [
+  '#66ccff', '#cc66ff', '#ff66cc',
+  '#66ffcc', '#ffffff', '#ffcc66'
+];
+
+const connectionDistance = 140;
+
+class Particle {
+  constructor() {
+    this.reset();
+  }
+  reset() {
+    const side = Math.floor(Math.random() * 4);
+    if (side === 0) {
+      this.x = Math.random() * w;
+      this.y = -10;
+    } else if (side === 1) {
+      this.x = w + 10;
+      this.y = Math.random() * h;
+    } else if (side === 2) {
+      this.x = Math.random() * w;
+      this.y = h + 10;
+    } else {
+      this.x = -10;
+      this.y = Math.random() * h;
+    }
+    this.vx = (Math.random() - 0.5) * 0.7;
+    this.vy = (Math.random() - 0.5) * 0.7;
+    this.r = Math.random() * 1.8 + 1;
+    this.color = colors[Math.floor(Math.random() * colors.length)];
+  }
+  update() {
+    this.x += this.vx;
+    this.y += this.vy;
+    if (this.x < -30 || this.x > w + 30 || this.y < -30 || this.y > h + 30) {
+      this.reset();
+    }
+  }
+  draw() {
+    ctx.beginPath();
+    ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
+    ctx.fillStyle = this.color;
+    ctx.fill();
+  }
+}
+
+const particles = Array.from({ length: 70 }, () => new Particle());
+
+function animate() {
+  ctx.fillStyle = 'rgba(0,0,0,0.1)';
+  ctx.fillRect(0, 0, w, h);
+
+  particles.forEach(p => {
+    p.update();
+    p.draw();
+  });
+
+  for (let i = 0; i < particles.length; i++) {
+    for (let j = i + 1; j < particles.length; j++) {
+      const dx = particles[i].x - particles[j].x;
+      const dy = particles[i].y - particles[j].y;
+      const dist = Math.hypot(dx, dy);
+      if (dist < connectionDistance) {
+        ctx.beginPath();
+        ctx.strokeStyle = `rgba(102, 204, 255, ${1 - dist / connectionDistance})`;
+        ctx.lineWidth = 0.5;
+        ctx.moveTo(particles[i].x, particles[i].y);
+        ctx.lineTo(particles[j].x, particles[j].y);
+        ctx.stroke();
+      }
+    }
+  }
+  requestAnimationFrame(animate);
+}
+animate();
+</script>
+</body>
+</html>
